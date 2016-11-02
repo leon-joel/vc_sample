@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include <boost/range/algorithm_ext/iota.hpp>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -20,7 +19,7 @@ namespace UnitTest1
 	//	Logger::WriteMessage("In Module Cleanup");
 	//}
 
-	TEST_CLASS(BoostTest)
+	TEST_CLASS(MiscTest)
 	{
 	public:
 
@@ -33,14 +32,14 @@ namespace UnitTest1
 		//	Logger::WriteMessage("In ~BoostTest");
 		//}
 
-		TEST_CLASS_INITIALIZE(ClassInitialize)
-		{
-			Logger::WriteMessage("In Class Initialize");
-		}
-		TEST_CLASS_CLEANUP(ClassCleanup)
-		{
-			Logger::WriteMessage("In Class Cleanup");
-		}
+		//TEST_CLASS_INITIALIZE(ClassInitialize)
+		//{
+		//	Logger::WriteMessage("In Class Initialize");
+		//}
+		//TEST_CLASS_CLEANUP(ClassCleanup)
+		//{
+		//	Logger::WriteMessage("In Class Cleanup");
+		//}
 
 
 		//BEGIN_TEST_METHOD_ATTRIBUTE(TestMethod1)
@@ -58,26 +57,36 @@ namespace UnitTest1
 		//	Assert::Fail(L"Fail");
 		//}
 
-		TEST_METHOD(TestIota)
+		TEST_METHOD(TestCString)
 		{
-			std::array<int, 3> arr;
-			std::iota(arr.begin(), arr.end(), -1);
+			// 0詰めの桁数指定
+			CString sFormat;
+			sFormat.Format(_T("%%s%%s%%0%dd%%s"), 2);
+			//Logger::WriteMessage(sFormat);	// -> %s%s%02d%s
 
-			Assert::AreEqual(-1, arr[0]);
-			Assert::AreEqual(0, arr[1]);
-			Assert::AreEqual(1, arr[2]);
+			// フォーマット
+			CString sReadPath;
+			sReadPath.Format(sFormat,
+							 _T("dir"),
+							 _T("Title"),
+							 9,
+							 _T("ext"));
+			//Logger::WriteMessage(sReadPath);	// -> dirTitle09ext
+	
+
+			// 0詰め桁数指定しつつ、フォーマットする
+			CString sReadPath2;
+			sReadPath2.Format(_T("%s%s%0*d%s"),
+							  _T("dir"),
+							  _T("Title"),
+							  3,
+							  9,
+							  _T("ext"));
+			//Logger::WriteMessage(sReadPath2);	// -> dirTitle009ext
+
+
+
 		}
 
-		TEST_METHOD(TestBoostIota)
-		{
-			std::array<int, 3> arr;
-			boost::iota(arr, 1);
-
-			Assert::AreEqual((size_t)3, arr.size());
-
-			Assert::AreEqual(1, arr[0]);
-			Assert::AreEqual(2, arr[1]);
-			Assert::AreEqual(3, arr[2]);
-		}
 	};
 }
