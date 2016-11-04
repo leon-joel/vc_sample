@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<ArrayOfArrayOfArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <ArrayOfArrayOfString>
+    <ArrayOfString>
+      <string>F:\work\github\vc_sample\MFCApplication1\UnitTest1\boost_test.cpp</string>
+    </ArrayOfString>
+    <ArrayOfString>
+      <string>F:\work\github\vc_sample\MFCApplication1\UnitTest1\misc_test.cpp</string>
+    </ArrayOfString>
+    <ArrayOfString>
+      <string>F:\work\github\vc_sample\MFCApplication1\UnitTest1\stdafx.h</string>
+    </ArrayOfString>
+    <ArrayOfString>
+      <string>F:\work\github\vc_sample\MFCApplication1\UnitTest1\constexpr_test.cpp</string>
+    </ArrayOfString>
+    <ArrayOfString>
+      <string>履歴 - master</string>
+    </ArrayOfString>
+  </ArrayOfArrayOfString>
+</ArrayOfArrayOfArrayOfString>

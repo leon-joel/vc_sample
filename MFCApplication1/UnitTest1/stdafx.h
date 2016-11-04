@@ -53,7 +53,32 @@
 // TODO: プログラムに必要な追加ヘッダーをここで参照してください
 
 #include <iostream>
+#include <string>
 #include <array>
 #include <vector>
 #include <numeric>
 #include <algorithm>
+#include <filesystem>
+
+
+#if defined(UNICODE) || defined(_UNICODE)
+# define tout std::wcout
+# define tin std::wcin
+# define terr std::wcerr
+# define tlog std::wclog
+#else
+# define tout std::cout
+# define tin std::cin
+# define terr std::cerr
+# define tlog std::clog
+#endif
+
+//typedef std::basic_string<_TCHAR> tstring
+//typedef std::basic_stringstream<_TCHAR> tstringstream;
+//typedef std::basic_ostringstream<_TCHAR> tostringstream;
+//typedef std::basic_istringstream<_TCHAR> tistringstream;
+
+using tstring = std::basic_string<_TCHAR>;
+using tstringstream = std::basic_stringstream<_TCHAR>;
+using tostringstream = std::basic_ostringstream<_TCHAR>;
+using tistringstream = std::basic_istringstream<_TCHAR>;
