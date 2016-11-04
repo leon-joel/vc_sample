@@ -60,6 +60,8 @@
 #include <algorithm>
 #include <filesystem>
 
+#include <boost/range/algorithm_ext/iota.hpp>
+#include <boost/filesystem.hpp>
 
 #if defined(UNICODE) || defined(_UNICODE)
 # define tout std::wcout

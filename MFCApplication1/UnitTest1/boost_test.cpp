@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include <boost/range/algorithm_ext/iota.hpp>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -79,5 +78,7 @@ namespace UnitTest1
 			Assert::AreEqual(2, arr[1]);
 			Assert::AreEqual(3, arr[2]);
 		}
+
+		// boost/filesystem.hpp のテストは misc_test.cpp の方に記載
 	};
 }

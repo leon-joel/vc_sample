@@ -154,8 +154,78 @@ namespace UnitTest1
 			ost << _T("末端拡張子をTrim後: ") << path.filename().c_str() << std::endl;	// body  ※これ以上はTrimされないようだ
 
 			Logger::WriteMessage(ost.str().c_str());
-
 		}
 
+		TEST_METHOD(BoostPathTest)
+		{
+			tostringstream ost;
+			tstring filename(_T("F:/SecondYear/VCproject/cloud/raw-format/data/cloud-velocity.exe"));
+			boost::filesystem::path path(filename);
+
+			Assert::AreEqual(_T("F:/"), path.root_path().c_str());
+			Assert::AreEqual(LR"(F:/)", path.root_path().c_str());
+			// ↑ \\ が煩わしいのでC+11で導入された Raw String Literal で記述してみた ※https://msdn.microsoft.com/ja-jp/library/69ze775t.aspx
+			//    簡単に記述できるが、TCHAR+RAW のマクロがなさそうなので、Unicode/MBCSはどちらかを決め打ちで書くことになりそう…
+			ost << _T("ドライブ名(root_path): ") << path.root_path() << std::endl;	// F:/ ※Boost版は区切り文字を変換しない点に注意！
+
+			Assert::AreEqual(LR"(F:/SecondYear/VCproject/cloud/raw-format/data)", path.parent_path().c_str());	// Raw String Literalで記述してみた ※https://msdn.microsoft.com/ja-jp/library/69ze775t.aspx
+			ost << _T("parent_path: ") << path.parent_path() << std::endl;			// F:/SecondYear/VCproject/cloud/raw-format/data
+
+			Assert::AreEqual(LR"(cloud-velocity.exe)", path.filename().c_str());
+			ost << _T("filename: ") << path.filename() << std::endl;				// cloud-velocity.exe
+
+			Assert::AreEqual(LR"(.exe)", path.extension().c_str());
+			ost << _T("拡張子: ") << path.extension() << std::endl;					// .exe
+			Assert::AreEqual(LR"(F:)", path.root_name().c_str());
+			ost << _T("root_name: ") << path.root_name() << std::endl;				// F:
+			Assert::AreEqual(LR"(/)", path.root_directory().c_str());
+			ost << _T("root_directory: ") << path.root_directory() << std::endl;	// /
+
+			Assert::AreEqual(LR"(F:/SecondYear/VCproject/cloud/raw-format/data/cloud-velocity.exe)", path.c_str());
+			ost << _T("フルパス: ") << path.c_str() << std::endl;
+
+			Assert::IsTrue(path.is_absolute());
+			ost << _T("絶対パス？: ") << path.is_absolute() << std::endl;				// 1
+
+			Logger::WriteMessage(ost.str().c_str());
+		}
+
+		TEST_METHOD(BoostPathTest2)
+		{
+			tostringstream ost;
+			tstring filename(LR"(..\test\fname)");
+			boost::filesystem::path path(filename);
+
+			Assert::IsFalse(path.is_absolute());
+			ost << _T("絶対パス？: ") << path.is_absolute() << std::endl;				// 0
+
+			Assert::AreEqual(LR"(..\test)", path.parent_path().c_str());			// ..\test  ※Boost版は区切り文字を変換しない点に注意！
+			ost << _T("parent_path: ") << path.parent_path() << std::endl;
+
+			Assert::AreEqual(LR"(fname)", path.filename().c_str());
+			ost << _T("filename: ") << path.filename() << std::endl;				// fname
+			Assert::AreEqual(LR"()", path.extension().c_str());
+			ost << _T("拡張子: ") << path.extension() << std::endl;					// 
+
+
+			filename = LR"(test/body.ext1.ext2.ext3)";
+			path = filename;
+			ost << std::endl;
+
+			path = path.stem();
+			Assert::AreEqual(LR"(body.ext1.ext2)", path.filename().c_str());
+			ost << _T("末端拡張子をTrim後: ") << path.filename().c_str() << std::endl;	// body.ext1.ext2
+			path = path.stem();
+			Assert::AreEqual(LR"(body.ext1)", path.filename().c_str());
+			ost << _T("末端拡張子をTrim後: ") << path.filename().c_str() << std::endl;	// body.ext1
+			path = path.stem();
+			Assert::AreEqual(LR"(body)", path.filename().c_str());
+			ost << _T("末端拡張子をTrim後: ") << path.filename().c_str() << std::endl;	// body
+			path = path.stem();
+			Assert::AreEqual(LR"(body)", path.filename().c_str());
+			ost << _T("末端拡張子をTrim後: ") << path.filename().c_str() << std::endl;	// body  ※これ以上はTrimされないようだ
+
+			Logger::WriteMessage(ost.str().c_str());
+		}
 	};
 }
