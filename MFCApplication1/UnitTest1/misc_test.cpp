@@ -227,5 +227,131 @@ namespace UnitTest1
 
 			Logger::WriteMessage(ost.str().c_str());
 		}
+
+		const int VEC_SIZE = 100;
+		std::vector<int> moveVector()
+		{
+			std::vector<int> vec(VEC_SIZE);
+			boost::iota(vec, 0);
+
+			return std::move(vec);
+		}
+
+		std::vector<int> copyVector()
+		{
+			std::vector<int> vec(VEC_SIZE);
+			boost::iota(vec, 0);
+
+			return vec;
+		}
+
+		void refVector(std::vector<int>& vec)
+		{
+			vec.resize(VEC_SIZE);
+			boost::iota(vec, 0);
+		}
+
+		TEST_METHOD(StdChrono)
+		{
+			tostringstream ost;
+
+			// 1. 関数内末尾で std::move を呼び出している
+			auto start = std::chrono::system_clock::now();
+			int sum = 0;
+			for (long i = 0; i < 1000; ++i) {
+				std::vector<int> vec = moveVector();
+				//sum = boost::accumulate(vec, 0);
+				sum = vec.size();
+			}
+			ost << sum << std::endl;
+			auto end = std::chrono::system_clock::now();
+			LONG64 elapsed1 = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+
+			// 2. 関数内末尾で std::move を呼び出さず、コピーを返している（つもり）
+			start = std::chrono::system_clock::now();
+			for (long i = 0; i < 1000; ++i) {
+				std::vector<int> vec = copyVector();
+				//sum = boost::accumulate(vec, 0);
+				sum = vec.size();
+			}
+			ost << sum << std::endl;
+			end = std::chrono::system_clock::now();
+			LONG64 elapsed2 = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+
+			// 3. 従来的なやり方（入れ物を参照で受け取り、関数内で詰め込んであげる）
+			start = std::chrono::system_clock::now();
+			for (long i = 0; i < 1000; ++i) {
+				std::vector<int> vec;
+				refVector(vec);
+				//sum = boost::accumulate(vec, 0);
+				sum = vec.size();
+			}
+			ost << sum << std::endl;
+			end = std::chrono::system_clock::now();
+			LONG64 elapsed3 = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+
+			// 4. 無理矢理にコピーコンストラクトを走らせている
+			start = std::chrono::system_clock::now();
+			for (long i = 0; i < 1000; ++i) {
+				std::vector<int> vec;
+				refVector(vec);
+				std::vector<int> vec2(vec);
+				//sum = boost::accumulate(vec, 0);
+				sum = vec.size();
+			}
+			ost << sum << std::endl;
+			end = std::chrono::system_clock::now();
+			LONG64 elapsed4 = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+
+
+
+			ost << _T("経過時間1 (move): ") << elapsed1 << _T("msec") << std::endl;
+			ost << _T("経過時間2 (copy): ") << elapsed2 << _T("msec") << std::endl;
+			ost << _T("経過時間3 (ref ): ") << elapsed3 << _T("msec") << std::endl;
+			ost << _T("経過時間4 (cpy ): ") << elapsed4 << _T("msec") << std::endl;
+			Logger::WriteMessage(ost.str().c_str());
+
+			// x86/Debug版     5万件
+			//経過時間1(move) : 12980msec
+			//経過時間2(copy) : 12430msec
+			//経過時間3(ref ) : 12465msec
+			//経過時間4(cpy ) : 12529msec
+
+			// x86/Release版           20万件
+			//経過時間1(move) : 36msec  283msec
+			//経過時間2(copy) : 37msec  281msec
+			//経過時間3(ref ) : 36msec  316msec
+			//経過時間4(cpy ) : 77msec  824msec
+
+			// x64/Release版           20万件
+			//経過時間1(move) : 32msec  188msec
+			//経過時間2(copy) : 32msec  186msec
+			//経過時間3(ref ) : 46msec  221msec
+			//経過時間4(cpy ) : 40msec  523msec
+
+			// 考察: 
+			// x86/Release版の結果について: 
+			//   VC14のstd::vectorにはムーブ代入演算子（右辺値参照を受け取る代入演算子 CMyClass& operator=(CMyClass&& value) が
+			//   定義されているので、1, 2 のどちらもコピーは発生していないものと思われる。
+			//   （1.がstd::moveを呼び出している分ちょっと遅いのかな？）
+			//   3. は従来通りのやり方なので、MoveもCopyも発生しておらず速いのは当然。resizeしている分少し遅いのかも。
+			//   4.は無理矢理コピーさせているので当然遅い。
+			//   http://program.station.ez-net.jp/special/handbook/cpp/syntax/move.asp
+
+			// x64/Release版の結果について: 
+			//   データ数が少ない場合にはあまり差が出なかった。3より4の方が速いのも意外。誤差かな？
+			//   データ数を4倍に増やした場合（20万件）には、x86版と同じ傾向になった。
+			//
+			// Debug版の結果について: 
+			//   どれもほぼ同じ所要時間なのがよく分からない。
+			//   メモリーチェックを行うため、Debug版ではコピーに近いことが行われているのかもしれない。		
+
+			// 結論: 
+			// ・std::vectorのように、ムーブ代入・ムーブコピーを実装しているクラスの場合は、
+			//   returnする時に std::move を入れる必要はなく、2.のやり方がベストチョイス。
+			// ・対応していない場合は、従来通りのやり方、つまり3.でやるしかない。
+			// ・自作クラスでコピーに時間（とリソース）がかかりそうなものの場合は、
+			//   ムーブ代入・ムーブコピーを実装しておく。
+		}
 	};
 }
