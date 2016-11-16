@@ -2,7 +2,7 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-namespace UnitTest1
+namespace MiscUnitTest
 {
 	//BEGIN_TEST_MODULE_ATTRIBUTE()
 	//	TEST_MODULE_ATTRIBUTE(L"Date", L"2010/6/12")
@@ -32,14 +32,14 @@ namespace UnitTest1
 		//	Logger::WriteMessage("In ~BoostTest");
 		//}
 
-		TEST_CLASS_INITIALIZE(ClassInitialize)
-		{
-			Logger::WriteMessage("In Class Initialize");
-		}
-		TEST_CLASS_CLEANUP(ClassCleanup)
-		{
-			Logger::WriteMessage("In Class Cleanup");
-		}
+		//TEST_CLASS_INITIALIZE(ClassInitialize)
+		//{
+		//	Logger::WriteMessage("In Class Initialize");
+		//}
+		//TEST_CLASS_CLEANUP(ClassCleanup)
+		//{
+		//	Logger::WriteMessage("In Class Cleanup");
+		//}
 
 
 		//BEGIN_TEST_METHOD_ATTRIBUTE(TestMethod1)
@@ -59,6 +59,7 @@ namespace UnitTest1
 
 		TEST_METHOD(TestIota)
 		{
+			// iotaで連番を生成しarrayに代入
 			std::array<int, 3> arr;
 			std::iota(arr.begin(), arr.end(), -1);
 
@@ -69,6 +70,7 @@ namespace UnitTest1
 
 		TEST_METHOD(TestBoostIota)
 		{
+			// [boost版] iotaで連番を生成しarrayに代入
 			std::array<int, 3> arr;
 			boost::iota(arr, 1);
 
@@ -80,5 +82,47 @@ namespace UnitTest1
 		}
 
 		// boost/filesystem.hpp のテストは misc_test.cpp の方に記載
+
+		TEST_METHOD(BoostVectorErase)
+		{
+			std::vector<int> vec(3);	// サイズは3
+			boost::iota(vec, 1);		// 1から始まる連番を格納
+			Assert::AreEqual((size_t)3, vec.size());
+
+			auto it = boost::find(vec, 2);		// 2を探す
+			vec.erase(vec.begin(), it);			// 2の手前まで要素を取り除く
+
+			Assert::AreEqual((size_t)2, vec.size());
+			Assert::AreEqual(2, vec[0]);
+			Assert::AreEqual(3, vec[1]);
+		}
+
+		TEST_METHOD(BoostClampTest)
+		{
+			Assert::AreEqual(0, boost::algorithm::clamp(-1, 0, 10));
+			Assert::AreEqual(0, boost::algorithm::clamp(0, 0, 10));
+			Assert::AreEqual(5, boost::algorithm::clamp(5, 0, 10));
+			Assert::AreEqual(10, boost::algorithm::clamp(10, 0, 10));
+			Assert::AreEqual(10, boost::algorithm::clamp(11, 0, 10));
+
+			Assert::AreEqual(0.0, boost::algorithm::clamp(-1.0, 0.0, 10.0));
+			Assert::AreEqual(0.0, boost::algorithm::clamp(0.0, 0.0, 10.0));
+			Assert::AreEqual(5.0, boost::algorithm::clamp(5.0, 0.0, 10.0));
+			Assert::AreEqual(10.0, boost::algorithm::clamp(10.0, 0.0, 10.0));
+			Assert::AreEqual(10.0, boost::algorithm::clamp(11.0, 0.0, 10.0));
+		}
+
+		TEST_METHOD(BoostRangeClampTest)
+		{
+			std::array<int, 4> arr;
+			boost::iota(arr, -1);	// -1, 0, 1, 2
+
+			boost::algorithm::clamp_range(arr, arr.begin(), 0, 1);
+			Assert::AreEqual(0, arr[0]);
+			Assert::AreEqual(0, arr[1]);
+			Assert::AreEqual(1, arr[2]);
+			Assert::AreEqual(1, arr[3]);
+		}
+
 	};
 }

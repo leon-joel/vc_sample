@@ -63,6 +63,7 @@
 #include <chrono>
 #include <ctime>
 
+#include <boost/algorithm/clamp.hpp>
 #include <boost/range/numeric.hpp>
 #include <boost/range/algorithm/find.hpp>
 #include <boost/range/algorithm_ext/iota.hpp>
