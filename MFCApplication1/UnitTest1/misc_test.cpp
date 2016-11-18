@@ -353,5 +353,44 @@ namespace UnitTest1
 			// ・自作クラスでコピーに時間（とリソース）がかかりそうなものの場合は、
 			//   ムーブ代入・ムーブコピーを実装しておく。
 		}
+
+		TEST_METHOD(IntersectRect)
+		{
+			// r2がr1の中に全部入っている
+			CRect r1(0, 0, 10, 20);
+			CRect r2(3, 5, 8, 18);
+
+			CRect ir;
+			Assert::IsTrue(ir.IntersectRect(r1, r2) != 0);
+			Assert::AreEqual(3l, ir.left);
+			Assert::AreEqual(5l, ir.top);
+			Assert::AreEqual(5, ir.Width());
+			Assert::AreEqual(13, ir.Height());
+
+			// 少しはみ出している ※&= 演算子でも同じ事ができる。但し、戻り値が得られない。
+			ir.SetRect(8, 13, 13, 26);
+			ir &= r1;
+			Assert::AreEqual(8l, ir.left);
+			Assert::AreEqual(13l, ir.top);
+			Assert::AreEqual(2, ir.Width());
+			Assert::AreEqual(7, ir.Height());
+
+			// 境界線が重なっている ⇒ False
+			// ※画像処理では座標＝ピクセル＝幅のある点 なので、境界線が重なる＝RECTが成立する と扱わないといけない（かな？）
+			r2.SetRect(10, 13, 13, 26);
+			Assert::IsTrue(ir.IntersectRect(r1, r2) == 0, L"test");	// RECTが成立しないのでFalseが返ってくる
+
+																	// 完全に飛び出している ⇒ False
+			r2.SetRect(11, 13, 13, 26);
+			Assert::IsTrue(ir.IntersectRect(r1, r2) == 0);
+
+			// 非正規化RECTを渡してみる ⇒ False
+			r2.SetRect(13, 13, 8, 26);		// 2番目のサンプルを上下逆転
+			Assert::IsTrue(ir.IntersectRect(r1, r2) == 0, L"test2");	// Falseが返ってくる
+			tostringstream ost;
+			ost << bformat(_T(" LT(%d, %d)")) % ir.left % ir.top
+				<< bformat(_T(" RB(%d, %d)")) % ir.right % ir.bottom << std::endl;
+			Logger::WriteMessage(ost.str().c_str());
+		}
 	};
 }

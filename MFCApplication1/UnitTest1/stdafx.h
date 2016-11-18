@@ -5,6 +5,7 @@
 
 #pragma once
 
+#define NO_WARN_MBCS_MFC_DEPRECATION	// 警告抑止 warning C4996: 'MBCS_Support_Deprecated_In_MFC': MBCS support in MFC is deprecated and may be removed in a future version of MFC.
 
 #define NOMINMAX		// minwindef.hに記述されているmin/maxマクロを使わない。※std::max/min を邪魔しないように
 
@@ -63,12 +64,17 @@
 #include <chrono>
 #include <ctime>
 
+#pragma warning( push )
+#pragma warning(disable : 4819)		// interval.hpp あたりの作者名がドイツ語(?)かなにかで、この警告が大量に表示されてしまう ⇒ 現在のコード ページ (数) で表示できない文字を含んでいます。
+#include <boost/numeric/interval.hpp>
+#include <boost/format.hpp>
 #include <boost/algorithm/clamp.hpp>
 #include <boost/range/numeric.hpp>
 #include <boost/range/algorithm/find.hpp>
 #include <boost/range/algorithm_ext/iota.hpp>
 #include <boost/filesystem.hpp>
 //#include <boost/timer/timer.hpp>	// 使えなかった ※WEBから落としてきたバイナリーだったからかも
+#pragma warning( pop )
 
 #if defined(UNICODE) || defined(_UNICODE)
 # define tout std::wcout
@@ -88,6 +94,14 @@
 //typedef std::basic_istringstream<_TCHAR> tistringstream;
 
 using tstring = std::basic_string<_TCHAR>;
+using tostream = std::basic_ostream<_TCHAR, std::char_traits<_TCHAR>>;
 using tstringstream = std::basic_stringstream<_TCHAR>;
 using tostringstream = std::basic_ostringstream<_TCHAR>;
 using tistringstream = std::basic_istringstream<_TCHAR>;
+
+// boost用
+#if defined(UNICODE) || defined(_UNICODE)
+using bformat = boost::basic_format<wchar_t >;
+#else
+using bformat = boost::basic_format<char >;
+#endif
