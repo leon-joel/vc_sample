@@ -44,16 +44,30 @@ namespace SmartPtrTest
 		//	//FILE* pf(_tfopen(_T("f:/work/tmp/test.txt"), _T("ab")));
 		//	//_fputts(_T("test\r\n"), pf);	// ファイル開きっぱなしはデバッグ実行でも検出されない
 
-		//	using UP_FILE = std::unique_ptr<FILE, decltype(&fclose)>;
-		//	UP_FILE pf(_tfopen(_T("f:/work/tmp/test.txt"), _T("ab")), fclose);
-		//	_fputts(_T("test2\r\n"), pf.get());
+		//	using UPTR_FILE = std::unique_ptr<FILE, decltype(&fclose)>;
+		//	UPTR_FILE pf(_tfopen(_T("t:/unknown_drive.txt"), _T("ab")), fclose);
+		//	Assert::IsTrue(nullptr == pf.get());	// 生ポインター
+		//	Assert::IsTrue(nullptr == pf);			// operator== もオーバーライドされているようだ
+		//	Assert::IsFalse((bool)pf);				// nullptrの場合は所有権なしとなるようだ
+
+		//	UPTR_FILE pf2(_tfopen(_T("f:/work/tmp/test.txt"), _T("ab")), fclose);
+		//	Assert::IsTrue(nullptr != pf2.get());
+		//	Assert::IsTrue(nullptr != pf2);
+		//	Assert::IsTrue((bool)pf2);
+		//	_fputts(_T("test2\r\n"), pf2.get());
+
+		//	
+		//	//UPTR_FILE pf3 = pf2;			// unique_ptrのコピーは不可 ※ビルドエラー
+		//	UPTR_FILE pf3 = std::move(pf2);	// ムーブは可能
+		//	Assert::IsFalse((bool)pf2);		// pf2はもはや所有権を失っている
+		//	Assert::IsTrue((bool)pf3);		// pf3に所有権が移っている
 
 		//	{
-		//		std::vector<UP_FILE> vec;
-		//		vec.push_back(UP_FILE(_tfopen(_T("f:/work/tmp/test1.txt"), _T("ab")), fclose));
-		//		vec.push_back(UP_FILE(_tfopen(_T("f:/work/tmp/test2.txt"), _T("ab")), fclose));
-		//		vec.push_back(UP_FILE(_tfopen(_T("f:/work/tmp/test3.txt"), _T("ab")), fclose));
-		//		vec.push_back(UP_FILE(_tfopen(_T("f:/work/tmp/test4.txt"), _T("ab")), fclose));
+		//		std::vector<UPTR_FILE> vec;
+		//		vec.push_back(UPTR_FILE(_tfopen(_T("f:/work/tmp/test1.txt"), _T("ab")), fclose));
+		//		vec.push_back(UPTR_FILE(_tfopen(_T("f:/work/tmp/test2.txt"), _T("ab")), fclose));
+		//		vec.push_back(UPTR_FILE(_tfopen(_T("f:/work/tmp/test3.txt"), _T("ab")), fclose));
+		//		vec.push_back(UPTR_FILE(_tfopen(_T("f:/work/tmp/test4.txt"), _T("ab")), fclose));
 
 		//		_fputts(_T("test1\r\n"), vec[0].get());
 		//		_fputts(_T("test2\r\n"), vec[1].get());
