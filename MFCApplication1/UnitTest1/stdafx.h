@@ -73,6 +73,7 @@
 #include <boost/range/algorithm/find.hpp>
 #include <boost/range/algorithm_ext/iota.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/chrono/chrono.hpp>
 //#include <boost/timer/timer.hpp>	// 使えなかった ※WEBから落としてきたバイナリーだったからかも
 #pragma warning( pop )
 

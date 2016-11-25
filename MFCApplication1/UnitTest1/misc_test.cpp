@@ -356,6 +356,8 @@ namespace UnitTest1
 
 		TEST_METHOD(IntersectRect)
 		{
+			auto start = boost::chrono::high_resolution_clock::now();
+
 			// r2‚ªr1‚Ì’†‚É‘S•”“ü‚Á‚Ä‚¢‚é
 			CRect r1(0, 0, 10, 20);
 			CRect r2(3, 5, 8, 18);
@@ -391,6 +393,11 @@ namespace UnitTest1
 			ost << bformat(_T(" LT(%d, %d)")) % ir.left % ir.top
 				<< bformat(_T(" RB(%d, %d)")) % ir.right % ir.bottom << std::endl;
 			Logger::WriteMessage(ost.str().c_str());
+
+			auto end = boost::chrono::high_resolution_clock::now();
+
+			boost::chrono::duration<double> sec = end - start;
+			Logger::WriteMessage((bformat(_T("generate time %f[sec]\n")) % sec.count()).str().c_str());
 		}
 	};
 }
