@@ -5,6 +5,7 @@
 
 #pragma once
 
+#define _CRT_SECURE_NO_WARNINGS
 #define NO_WARN_MBCS_MFC_DEPRECATION	// 警告抑止 warning C4996: 'MBCS_Support_Deprecated_In_MFC': MBCS support in MFC is deprecated and may be removed in a future version of MFC.
 
 #define NOMINMAX		// minwindef.hに記述されているmin/maxマクロを使わない。※std::max/min を邪魔しないように
