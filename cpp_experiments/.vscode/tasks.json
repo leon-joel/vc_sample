@@ -1,0 +1,59 @@
+{
+  // See https://@o.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build",
+      "type": "shell",
+      "command": "msbuild",
+      "args": [
+        "/property:GenerateFullPaths=true",
+        "/t:build"
+      ],
+      "group": "build",
+      "presentation": {
+        "reveal": "silent"
+      },
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "buildgcc",
+      "command": "g++",
+      "type": "shell",
+      "presentation": {
+        "reveal": "always"
+      },
+      "args": [
+        "-std=c++11",
+        // "-m32",
+        "-g",
+        "-O0",
+        "-o",
+        "${workspaceFolder}/bin/a.out",
+        "${file}"
+      ],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "buildgcc-O2",
+      "command": "g++",
+      "type": "shell",
+      "presentation": {
+        "reveal": "always"
+      },
+      "args": [
+        "-std=c++11",
+        // "-m32",
+        "-g",
+        "-O2",
+        "-o",
+        "${workspaceFolder}/bin/a.out",
+        "${file}"
+      ],
+      "group": "build",
+      "problemMatcher": []
+    }
+  ]
+}
