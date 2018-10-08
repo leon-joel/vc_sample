@@ -1,22 +1,24 @@
 {
   // See https://@o.microsoft.com/fwlink/?LinkId=733558
   // for the documentation about the tasks.json format
+  // これは タスク->ビルドタスクの実行 で表示されるタスク
+  // ※F7で実行される方は ~/VisualCodeRunner/cpp_clang.sh で定義している。
   "version": "2.0.0",
   "tasks": [
-    {
-      "label": "build",
-      "type": "shell",
-      "command": "msbuild",
-      "args": [
-        "/property:GenerateFullPaths=true",
-        "/t:build"
-      ],
-      "group": "build",
-      "presentation": {
-        "reveal": "silent"
-      },
-      "problemMatcher": "$msCompile"
-    },
+    // {
+    //   "label": "build",
+    //   "type": "shell",
+    //   "command": "msbuild",
+    //   "args": [
+    //     "/property:GenerateFullPaths=true",
+    //     "/t:build"
+    //   ],
+    //   "group": "build",
+    //   "presentation": {
+    //     "reveal": "silent"
+    //   },
+    //   "problemMatcher": "$msCompile"
+    // },
     {
       "label": "buildgcc",
       "command": "g++",
@@ -25,7 +27,7 @@
         "reveal": "always"
       },
       "args": [
-        "-std=c++11",
+        "-std=c++17",
         // "-m32",
         "-g",
         "-O0",
@@ -44,7 +46,7 @@
         "reveal": "always"
       },
       "args": [
-        "-std=c++11",
+        "-std=c++17",
         // "-m32",
         "-g",
         "-O2",
